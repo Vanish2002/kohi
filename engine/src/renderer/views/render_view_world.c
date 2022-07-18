@@ -197,6 +197,8 @@ b8 render_view_world_on_build_packet(const struct render_view* self, void* data,
         out_packet->geometry_count++;
     }
 
+    darray_destroy(geometry_distances);
+
     return true;
 }
 
@@ -253,7 +255,7 @@ b8 render_view_world_on_render(const struct render_view* self, const struct rend
             // Draw it.
             renderer_draw_geometry(&packet->geometries[i]);
         }
-
+        darray_destroy(packet->geometries);
         if (!renderer_renderpass_end(pass)) {
             KERROR("render_view_world_on_render pass index %u failed to end.", p);
             return false;
@@ -273,6 +275,7 @@ static void swap(geometry_distance* a, geometry_distance* b) {
 
 static i32 partition(geometry_distance arr[], i32 low_index, i32 high_index, b8 ascending) {
     geometry_distance pivot = arr[high_index];
+    
     i32 i = (low_index - 1);
 
     for (i32 j = low_index; j <= high_index - 1; ++j) {
